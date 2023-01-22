@@ -2,6 +2,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Scanner;
 
 public class login{
     static String filename = "DB.txt";
@@ -26,34 +27,95 @@ public class login{
 
     //In main application run this in a try catch block
     //Attempts to create a new account unless thrown an error or the account exists already
-    public static void createUser(int username, int password) throws IOException{  
+    public static boolean createUser(int username, int password) throws IOException{  
         PrintWriter pWriter = login.getWriter();
         
         if(!user.verify(username, password)){
             pWriter.println(username + " " + password);
             pWriter.close();
-            return;
+            return true;
         }
         else{
             System.out.println("\nError:  Unable to create account\n\tUsername/Password already exist\n");
-            return;
+            return false;
         }
     }
 
-    public static void existingUser(int username, int password){
-
+    public static boolean existingUser(int username, int password){
+        boolean loginStatus;
+        if(user.verify(username, password)){
+            loginStatus = true;
+        }
+        else{
+            loginStatus = false;
+            System.out.println("Error:  Account does not exist");
+        }
+        return loginStatus;
     }
 
-    public static void userPrompt(){
-        System.out.println("");
+    public static void userPrompt(int option) throws IOException{
+        Scanner scnr = new Scanner(System.in);
+        int username;
+        int pass;
+        if(option > 3){
+            System.out.print("Error: Invalid option\nPlease enter a number between 1 and 3");
+            printMenu();
+        }
+        switch(option){
+            case(1):
+                System.out.print("Username: ");
+                username = hash.leHasher(scnr.next());
+                System.out.print("Password: ");
+                pass = hash.leHasher(scnr.next());
+                if(user.verify(username, pass)){
+                    System.out.println("Welcome back!");
+                }
+                else{
+                    System.out.println("Oops! Something went wrong, make sure your username and password are correct.");
+                    printMenu();
+                }
+                break;
+            case(2):
+                System.out.print("Create a Username: ");
+                username = hash.leHasher(scnr.next());
+                System.out.print("Create a Password (10-characters+): ");
+                pass = hash.leHasher(scnr.next());
+                if(createUser(username, pass)){
+                    System.out.println("Congratulations! Your account has successfully been created.");   
+                }
+                else{
+                    System.out.println("Oops! Something went wrong, it looks like this account already exists. Try logging in instead.");   
+                }
+                printMenu();
+                break;
+            case(3):
+                System.out.println("Goodbye!");
+                break;
+        }
+        scnr.close();
+        }
+
+    public static void printMenu(){
+        Scanner scnr = new Scanner(System.in);
+        System.out.println("Menu Options:  ");
+        System.out.println("1. Login\n2. Create Account\n3. Quit");
+        int option = Integer.parseInt(scnr.next());
+        try {
+            userPrompt(option);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public static void splashScreen(){
+    public static void printIntro(){
+        System.out.println("Welcome to Declan's Encrypted Java Login");
+        System.out.println("This application uses a hashing algorithm built by ChatGPT to encrypt the username and password.");
         
     }
 
     //Tests for the login.java Class
     public static void loginTests(){
+        //splashScreen();
         String username = "Marco";
         String password = "Polo";
         int hashU = hash.leHasher(username);

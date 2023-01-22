@@ -60,6 +60,7 @@ public class user {
 
     //Verifies that the user and password exist in the DB.txt file.
     public static boolean verify(int username, int password){
+        users = readFile("DB.txt");
             //System.out.println(username +": "+ password);
         for(user u : users){
             if(u.getUser() == username && u.getPass() == password){
