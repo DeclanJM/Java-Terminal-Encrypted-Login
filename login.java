@@ -41,6 +41,7 @@ public class login{
         }
     }
 
+    //Attempts to login to an existing account
     public static boolean existingUser(int username, int password){
         boolean loginStatus;
         if(user.verify(username, password)){
@@ -53,12 +54,15 @@ public class login{
         return loginStatus;
     }
 
+    //This method is called from printMenu after the user selects an option
+    //The prompts are currently create Account, login to an existing account, or exit
+    //I plan on implementing more functionality into this later
     public static void userPrompt(int option) throws IOException{
         Scanner scnr = new Scanner(System.in);
         int username;
         int pass;
-        if(option > 3){
-            System.out.print("Error: Invalid option\nPlease enter a number between 1 and 3");
+        if(option < 0 || option > 3){
+            System.out.println("Error: Invalid option\nPlease enter a number between 1 and 3");
             printMenu();
         }
         switch(option){
@@ -66,6 +70,11 @@ public class login{
                 System.out.print("Username: ");
                 username = hash.leHasher(scnr.next());
                 System.out.print("Password: ");
+                String password = scnr.next();
+                if(password.length() < 10){
+                    System.out.println("Invalid Password Length, please try again");
+                    userPrompt(1);
+                }
                 pass = hash.leHasher(scnr.next());
                 if(user.verify(username, pass)){
                     System.out.println("Welcome back!");
@@ -79,7 +88,12 @@ public class login{
                 System.out.print("Create a Username: ");
                 username = hash.leHasher(scnr.next());
                 System.out.print("Create a Password (10-characters+): ");
-                pass = hash.leHasher(scnr.next());
+                password = scnr.next();
+                if(password.length() < 10){
+                    System.out.println("Invalid password length, please try again.");
+                    userPrompt(2);
+                }
+                pass = hash.leHasher(password);
                 if(createUser(username, pass)){
                     System.out.println("Congratulations! Your account has successfully been created.");   
                 }
@@ -95,6 +109,8 @@ public class login{
         scnr.close();
         }
 
+    //The main menu for the program
+    //Only thing that needs to be called in a main method to run the program
     public static void printMenu(){
         Scanner scnr = new Scanner(System.in);
         System.out.println("Menu Options:  ");
@@ -107,6 +123,7 @@ public class login{
         }
     }
 
+    //Intro splash, basic for now but will update
     public static void printIntro(){
         System.out.println("Welcome to Declan's Encrypted Java Login");
         System.out.println("This application uses a hashing algorithm built by ChatGPT to encrypt the username and password.");
